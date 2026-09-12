@@ -1,0 +1,14 @@
+{
+  "name": "工作日程日历",
+  "short_name": "工作日历",
+  "description": "微信聊天记录 → 每月16日至次月15日的工作日程日历",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#1b66d6",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

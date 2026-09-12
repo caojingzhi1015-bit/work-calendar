@@ -1,0 +1,46 @@
+﻿=== Appx packages matching WorkBuddy ===
+NONE
+=== All sparse/external packages ===
+  1527c705-839a-4832-9118-54d4Bd6a0c89 | 1527c705-839a-4832-9118-54d4Bd6a0c89_10.0.19640.1000_neutral_neutral_cw5n1h2txyewy
+  E2A4F912-2574-4A75-9BB0-0D023378592B | E2A4F912-2574-4A75-9BB0-0D023378592B_10.0.19640.1000_neutral_neutral_cw5n1h2txyewy
+  Microsoft.BioEnrollment | Microsoft.BioEnrollment_10.0.19587.1000_neutral__cw5n1h2txyewy
+  Microsoft.CredDialogHost | Microsoft.CredDialogHost_10.0.19595.1001_neutral__cw5n1h2txyewy
+  Microsoft.Windows.CapturePicker | Microsoft.Windows.CapturePicker_10.0.19580.1000_neutral__cw5n1h2txyewy
+  Windows.CBSPreview | Windows.CBSPreview_10.0.19580.1000_neutral_neutral_cw5n1h2txyewy
+  Microsoft.Windows.DevHome | Microsoft.Windows.DevHome_0.100.128.0_x64__8wekyb3d8bbwe
+  MicrosoftTeams | MicrosoftTeams_1.0.0.0_x64__8wekyb3d8bbwe
+  BaiduNetdisk.DesktopSyncClient | BaiduNetdisk.DesktopSyncClient_7.17.5.6_neutral__r5kxaep58dem0
+  ASUSAmbientHAL64 | ASUSAmbientHAL64_1.0.0.2_neutral__gsg7p0crx7n6a
+  Microsoft.XboxGameOverlay | Microsoft.XboxGameOverlay_1.54.4001.0_x64__8wekyb3d8bbwe
+  Microsoft.People | Microsoft.People_10.2202.100.0_x64__8wekyb3d8bbwe
+  Microsoft.Xbox.TCUI | Microsoft.Xbox.TCUI_1.24.10001.0_x64__8wekyb3d8bbwe
+  MicrosoftCorporationII.MicrosoftFamily | MicrosoftCorporationII.MicrosoftFamily_0.2.40.0_x64__8wekyb3d8bbwe
+  Microsoft.MicrosoftEdge.Stable | Microsoft.MicrosoftEdge.Stable_128.0.2739.79_neutral__8wekyb3d8bbwe
+  Microsoft.MicrosoftStickyNotes | Microsoft.MicrosoftStickyNotes_4.0.6104.0_x64__8wekyb3d8bbwe
+  RealtekSemiconductorCorp.RealtekAudioControl | RealtekSemiconductorCorp.RealtekAudioControl_1.51.330.0_x64__dt26b99r8h8gj
+  Microsoft.WinAppRuntime.DDLM.5001.311.2039.0-x6 | Microsoft.WinAppRuntime.DDLM.5001.311.2039.0-x6_5001.311.2039.0_x64__8wekyb3d8bbwe
+  Microsoft.WinAppRuntime.DDLM.5001.311.2039.0-x8 | Microsoft.WinAppRuntime.DDLM.5001.311.2039.0-x8_5001.311.2039.0_x86__8wekyb3d8bbwe
+  Microsoft.OneDriveSync | Microsoft.OneDriveSync_24201.1006.5.0_neutral__8wekyb3d8bbwe
+  MicrosoftCorporationII.WinAppRuntime.Main.1.5 | MicrosoftCorporationII.WinAppRuntime.Main.1.5_5001.373.1736.0_x64__8wekyb3d8bbwe
+  Microsoft.OutlookForWindows | Microsoft.OutlookForWindows_1.2025.219.400_x64__8wekyb3d8bbwe
+  c5e2524a-ea46-4f67-841f-6a9465d9d515 | c5e2524a-ea46-4f67-841f-6a9465d9d515_10.0.26100.1_neutral_neutral_cw5n1h2txyewy
+  F46D4000-FD22-4DB4-AC8E-4E1DDDE828FE | F46D4000-FD22-4DB4-AC8E-4E1DDDE828FE_10.0.26100.1_neutral_neutral_cw5n1h2txyewy
+  Microsoft.AAD.BrokerPlugin | Microsoft.AAD.BrokerPlugin_1000.19580.1000.2_neutral_neutral_cw5n1h2txyewy
+  Microsoft.AccountsControl | Microsoft.AccountsControl_10.0.26100.1_neutral__cw5n1h2txyewy
+  Microsoft.AsyncTextService | Microsoft.AsyncTextService_10.0.26100.1_neutral__8wekyb3d8bbwe
+  Microsoft.MicrosoftEdgeDevToolsClient | Microsoft.MicrosoftEdgeDevToolsClient_1000.25128.1000.0_neutral_neutral_8wekyb3d8bbwe
+  Microsoft.Win32WebViewHost | Microsoft.Win32WebViewHost_10.0.26100.1_neutral_neutral_cw5n1h2txyewy
+  Microsoft.Windows.Apprep.ChxApp | Microsoft.Windows.Apprep.ChxApp_1000.25128.1000.0_neutral_neutral_cw5n1h2txyewy
+  Microsoft.Windows.CloudExperienceHost | Microsoft.Windows.CloudExperienceHost_10.0.26100.1_neutral_neutral_cw5n1h2txyewy
+  Microsoft.Windows.ContentDeliveryManager | Microsoft.Windows.ContentDeliveryManager_10.0.26100.1_neutral_neutral_cw5n1h2txyewy
+  Microsoft.Windows.NarratorQuickStart | Microsoft.Windows.NarratorQuickStart_10.0.26100.1_neutral_neutral_8wekyb3d8bbwe
+  Microsoft.Windows.ParentalControls | Microsoft.Windows.ParentalControls_1000.25128.1000.0_neutral_neutral_cw5n1h2txyewy
+  Microsoft.Windows.PeopleExperienceHost | Microsoft.Windows.PeopleExperienceHost_10.0.26100.1_neutral_neutral_cw5n1h2txyewy
+  Microsoft.Windows.PinningConfirmationDialog | Microsoft.Windows.PinningConfirmationDialog_1000.25140.1001.0_neutral__cw5n1h2txyewy
+  Microsoft.Windows.PrintQueueActionCenter | Microsoft.Windows.PrintQueueActionCenter_1.0.2.0_neutral_neutral_cw5n1h2txyewy
+  Microsoft.Windows.XGpuEjectDialog | Microsoft.Windows.XGpuEjectDialog_10.0.26100.1_neutral_neutral_cw5n1h2txyewy
+  Microsoft.XboxGameCallableUI | Microsoft.XboxGameCallableUI_1000.25128.1000.0_neutral_neutral_cw5n1h2txyewy
+  MicrosoftWindows.UndockedDevKit | MicrosoftWindows.UndockedDevKit_10.0.26100.1_neutral_neutral_cw5n1h2txyewy
+=== Registry: Share Targets ===
+=== Shell: SendTo / Share ===
+AppResolver OK

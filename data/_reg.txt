@@ -1,0 +1,7 @@
+﻿MSIX exists: False
+ADD-APPX: FAILED
+MSG: 找不到路径“D:\椁愬肪绾竆WorkBuddy\WorkBuddyShareTarget.msix”，因为该路径不存在。
+FULLERROR: 
+HRESULT: -2146233087
+--- verify ---
+STILL NOT REGISTERED
