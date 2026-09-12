@@ -1,7 +1,0 @@
-﻿MSIX: D:\餐巾纸\WorkBuddy\WorkBuddyShareTarget.msix exists=True
-EXT : D:\餐巾纸\WorkBuddy\share-target exists=True
-EXT files: WorkBuddyShareTarget.exe, WorkBuddyShareTarget.pdb
-ADD-APPX: OK
-OUT: 
---- verify ---
-FOUND WorkBuddyShareTarget | WorkBuddyShareTarget_5.5.6.0_neutral__fv0hcek9q9tbw | status=Ok | ver=5.5.6.0
