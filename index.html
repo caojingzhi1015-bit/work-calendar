@@ -32,8 +32,11 @@
     <button id="btnSync" class="btn">同步</button>
     <button id="btnUndo" class="btn" title="退回上一步（Ctrl/⌘ + Z）">↩ 上一步</button>
     <button id="btnExport" class="btn">导出</button>
-    <button id="btnVideo" class="btn icon" title="动态背景开关">◐</button>
-    <button id="btnTheme" class="btn icon" title="深色 / 浅色">☾</button>
+    <div class="seg" id="themeSeg" title="日间 / 夜间">
+      <button class="segbtn" data-theme="light">☀ 日间</button>
+      <button class="segbtn" data-theme="dark">☾ 夜间</button>
+    </div>
+    <button id="btnVideo" class="btn" title="动态背景开关">◐ 背景</button>
     <button id="btnSettings" class="btn ghost">设置</button>
   </div>
 </header>

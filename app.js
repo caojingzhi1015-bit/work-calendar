@@ -141,12 +141,21 @@ function toast(msg, undoFn) {
 
 /* ---------------- 外观（主题 / 动态背景） ---------------- */
 function applyLook() {
-  document.documentElement.dataset.theme = settings.theme || 'dark';
+  const theme = settings.theme === 'dark' ? 'dark' : 'light';
+  settings.theme = theme;
+  document.documentElement.dataset.theme = theme;
   document.body.classList.toggle('novideo', !settings.video);
-  $('btnTheme').textContent = settings.theme === 'light' ? '☀' : '☾';
-  $('btnVideo').textContent = settings.video ? '◐' : '◌';
+
+  document.querySelectorAll('#themeSeg .segbtn').forEach((b) => {
+    b.classList.toggle('on', b.dataset.theme === theme);
+  });
+  const vb = $('btnVideo');
+  if (vb) {
+    vb.textContent = settings.video ? '◐ 背景' : '◌ 背景';
+    vb.classList.toggle('on', !!settings.video);
+  }
   const meta = document.querySelector('meta[name=theme-color]');
-  if (meta) meta.setAttribute('content', settings.theme === 'light' ? '#f7f9fc' : '#003561');
+  if (meta) meta.setAttribute('content', theme === 'light' ? '#f7f9fc' : '#003561');
 }
 
 /* ---------------- 存储 ---------------- */
@@ -605,10 +614,9 @@ function bind() {
     }
   });
 
-  $('btnTheme').onclick = () => {
-    settings.theme = settings.theme === 'light' ? 'dark' : 'light';
-    saveSettings(); applyLook();
-  };
+  document.querySelectorAll('#themeSeg .segbtn').forEach((b) => {
+    b.onclick = () => { settings.theme = b.dataset.theme; saveSettings(); applyLook(); };
+  });
   $('btnVideo').onclick = () => {
     settings.video = !settings.video;
     saveSettings(); applyLook();
