@@ -62,7 +62,10 @@ const SEED_NOTE = {
 const DEFAULT_SYNC = 'https://raw.githubusercontent.com/caojingzhi1015-bit/work-calendar/main/data/daily.json';
 
 let state = { start: '', end: '', days: {}, raw: {} };
-let settings = { me: '', api: '', model: 'deepseek-chat', key: '', sync: DEFAULT_SYNC };
+let settings = {
+  me: '', api: '', model: 'deepseek-chat', key: '', sync: DEFAULT_SYNC,
+  theme: 'dark', video: true
+};
 
 /* ---------------- 基础工具 ---------------- */
 const pad = (n) => String(n).padStart(2, '0');
@@ -80,9 +83,29 @@ function currentMonthVal() {
     ? `${now.getFullYear()}-${pad(now.getMonth() + 1)}`
     : (() => { const p = new Date(now.getFullYear(), now.getMonth() - 1, 1); return `${p.getFullYear()}-${pad(p.getMonth() + 1)}`; })();
 }
-function toast(msg) {
-  const t = $('toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2200);
+function toast(msg, undoFn) {
+  const t = $('toast');
+  t.textContent = '';
+  t.appendChild(document.createTextNode(msg));
+  if (typeof undoFn === 'function') {
+    const b = document.createElement('button');
+    b.className = 'undo'; b.textContent = '撤销';
+    b.onclick = () => { undoFn(); t.classList.remove('show'); };
+    t.appendChild(b);
+  }
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), undoFn ? 5000 : 2200);
+}
+
+/* ---------------- 外观（主题 / 动态背景） ---------------- */
+function applyLook() {
+  document.documentElement.dataset.theme = settings.theme || 'dark';
+  document.body.classList.toggle('novideo', !settings.video);
+  $('btnTheme').textContent = settings.theme === 'light' ? '☀' : '☾';
+  $('btnVideo').textContent = settings.video ? '◐' : '◌';
+  const meta = document.querySelector('meta[name=theme-color]');
+  if (meta) meta.setAttribute('content', settings.theme === 'light' ? '#eef1f6' : '#003561');
 }
 
 /* ---------------- 存储 ---------------- */
@@ -120,8 +143,12 @@ function render() {
   draw();
 }
 
+let lastDrawn = null;
 function draw() {
   const grid = $('grid');
+  // 换周期时做入场动画，同周期内重绘不再抖
+  const stagger = lastDrawn !== state.start;
+  lastDrawn = state.start;
   grid.innerHTML = '';
   const today = fmt(new Date());
   const s = new Date(state.start + 'T00:00:00');
@@ -138,16 +165,19 @@ function draw() {
     const text = (rec.text || '').trim();
     const wd = d.getDay();
     const div = document.createElement('div');
-    div.className = 'cell' + (wd === 0 || wd === 6 ? ' we' : '') + (k === today ? ' todaybox' : '');
+    div.className = 'cell' + (wd === 0 || wd === 6 ? ' we' : '')
+      + (text ? ' filled' : '') + (k === today ? ' todaybox' : '');
     div.dataset.date = k;
     if (rec.note) div.title = rec.note;
+    if (stagger) { div.style.animation = `fade-rise .5s cubic-bezier(.22,.8,.28,1) ${Math.min(i, 20) * 16}ms both`; }
     const label = d.getDate() === 1 ? `${d.getMonth() + 1}月1日` : String(d.getDate());
     div.innerHTML = `<div class="dhead"><span class="wd">${WEEK[wd]}</span>`
       + `<span class="dnum${k === today ? ' today' : ''}">${label}</span></div>`
       + (text
         ? `<div class="ev${String(rec.note || '').includes('★') ? ' star' : ''}">${escapeHtml(text)}</div>`
-        : `<div class="ev empty">—</div>`);
-    div.addEventListener('click', () => openEditor(k));
+        : `<div class="ev empty">—</div>`)
+      + (text ? `<span class="delx" data-del="${k}" title="删除这天">×</span>` : '');
+    attachCell(div, k, !!text);
     row.appendChild(div);
   });
 
@@ -164,6 +194,77 @@ function draw() {
 
 function escapeHtml(s) {
   return String(s || '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+}
+
+/* ---------------- 单元格交互：点击编辑 / 长按删除 ---------------- */
+const LONG_MS = 480;
+
+function attachCell(el, date, hasText) {
+  let timer = null, fired = false, moved = false, sx = 0, sy = 0;
+
+  const start = (e) => {
+    if (e.button === 2) return;              // 右键不处理
+    fired = false; moved = false;
+    sx = e.clientX || 0; sy = e.clientY || 0;
+    if (hasText) el.classList.add('pressing');
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      fired = true;
+      el.classList.remove('pressing');
+      if (navigator.vibrate) { try { navigator.vibrate(18); } catch (x) { } }
+      askDelete(date);
+    }, LONG_MS);
+  };
+  const cancel = () => { clearTimeout(timer); el.classList.remove('pressing'); };
+
+  el.addEventListener('pointerdown', start);
+  el.addEventListener('pointermove', (e) => {
+    if (Math.abs((e.clientX || 0) - sx) > 10 || Math.abs((e.clientY || 0) - sy) > 10) { moved = true; cancel(); }
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => el.addEventListener(ev, cancel));
+  el.addEventListener('contextmenu', (e) => { e.preventDefault(); if (hasText) askDelete(date); });
+  el.addEventListener('click', (e) => {
+    if (e.target && e.target.dataset && e.target.dataset.del) return;   // 点小叉
+    if (fired) { fired = false; return; }                               // 长按后不弹编辑
+    openEditor(date);
+  });
+  const x = el.querySelector('.delx');
+  if (x) x.addEventListener('click', (e) => { e.stopPropagation(); askDelete(date); });
+}
+
+/* 删除确认 */
+let pendingDel = null;
+function askDelete(date) {
+  const rec = state.days[date];
+  const text = String((rec && rec.text) || '').trim();
+  if (!text) { toast('这天本来就是空的'); return; }
+  pendingDel = date;
+  const d = new Date(date + 'T00:00:00');
+  $('dcTitle').textContent = `删除 ${d.getMonth() + 1} 月 ${d.getDate()} 日？`;
+  $('dcVal').textContent = text;
+  $('delcfm').classList.add('show');
+}
+$('dcNo').onclick = () => { $('delcfm').classList.remove('show'); pendingDel = null; };
+$('dcYes').onclick = () => {
+  const date = pendingDel;
+  $('delcfm').classList.remove('show'); pendingDel = null;
+  if (!date || !state.days[date]) return;
+  doDelete(date);
+};
+$('delcfm').addEventListener('click', (e) => { if (e.target === $('delcfm')) $('delcfm').classList.remove('show'); });
+
+function doDelete(date) {
+  const backup = state.days[date];
+  const rawBak = state.raw ? state.raw[date] : undefined;
+  delete state.days[date];
+  if (state.raw && state.raw[date]) delete state.raw[date];
+  savePeriod(); draw();
+  const d = new Date(date + 'T00:00:00');
+  toast(`已删除 ${d.getMonth() + 1}月${d.getDate()}日`, () => {
+    state.days[date] = backup;
+    if (rawBak !== undefined) { state.raw = state.raw || {}; state.raw[date] = rawBak; }
+    savePeriod(); draw();
+  });
 }
 
 /* ---------------- 编辑单日 ---------------- */
@@ -189,6 +290,12 @@ $('edSave').onclick = () => {
   else delete state.days[editing];
   savePeriod(); draw(); $('editor').classList.remove('show');
   toast('已保存');
+};
+$('edDel').onclick = () => {
+  if (!editing) return;
+  const date = editing;
+  $('editor').classList.remove('show');
+  askDelete(date);
 };
 
 /* ---------------- 微信 txt 解析 ---------------- */
@@ -383,8 +490,14 @@ async function tryRemote() {
       state.days[k] = (typeof v === 'string') ? { text: v, work: !!v, note: '' } : v;
     });
     savePeriod(); draw();
+    stampSync();
     $('syncState').textContent = '已从远端同步';
   } catch (e) { /* file:// 或离线时静默 */ }
+}
+
+function stampSync() {
+  const n = new Date();
+  $('syncState').textContent = `上次同步 ${pad(n.getHours())}:${pad(n.getMinutes())}`;
 }
 
 async function doSync() {
@@ -400,7 +513,7 @@ async function doSync() {
       const v = days[k];
       state.days[k] = (typeof v === 'string') ? { text: v, work: !!v, note: '' } : v;
     });
-    savePeriod(); draw(); toast('同步完成');
+    savePeriod(); draw(); stampSync(); toast('同步完成');
   } catch (e) { toast('同步失败：' + e.message); }
 }
 
@@ -440,10 +553,20 @@ function bind() {
   $('btnSync').onclick = doSync;
   $('btnExport').onclick = doExport;
 
+  $('btnTheme').onclick = () => {
+    settings.theme = settings.theme === 'light' ? 'dark' : 'light';
+    saveSettings(); applyLook();
+  };
+  $('btnVideo').onclick = () => {
+    settings.video = !settings.video;
+    saveSettings(); applyLook();
+    toast(settings.video ? '动态背景已开' : '动态背景已关');
+  };
+
   $('btnSettings').onclick = () => {
     $('setMe').value = settings.me; $('setApi').value = settings.api;
     $('setModel').value = settings.model; $('setKey').value = settings.key;
-    $('setSync').value = settings.sync; $('settings').classList.add('show');
+    $('setSync').value = settings.sync || DEFAULT_SYNC; $('settings').classList.add('show');
   };
   $('setSave').onclick = () => {
     settings.me = $('setMe').value.trim(); settings.api = $('setApi').value.trim();
@@ -463,5 +586,6 @@ function bind() {
 
 /* ---------------- 启动 ---------------- */
 loadSettings();
+applyLook();
 bind();
 render();

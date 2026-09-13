@@ -1,10 +1,13 @@
 /* 离线缓存：让「添加到主屏幕」后无网也能打开 */
-const CACHE = 'wb-calendar-v1';
+const CACHE = 'wb-calendar-v3';
 const ASSETS = [
   './',
   './index.html',
+  './app.js',
+  './style.css',
   './manifest.webmanifest',
-  './icon.svg'
+  './icon.svg',
+  './data/daily.json'
 ];
 
 self.addEventListener('install', (e) => {

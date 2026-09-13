@@ -1,20 +1,28 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="工作日历">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#003561">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <title>工作日程日历</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="topbar">
-  <div class="brand">工作日程日历</div>
+<video id="bgvideo" autoplay loop muted playsinline preload="auto"
+  poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
+  <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4" type="video/mp4">
+</video>
+<div id="veil"></div>
+
+<header class="topbar liquid-glass">
+  <div class="brand">工作日程<sup>®</sup></div>
   <div class="tools">
     <label class="fld">周期
       <input type="month" id="monthPick">
@@ -23,29 +31,31 @@
     <button id="btnAI" class="btn">AI 归纳</button>
     <button id="btnSync" class="btn">同步</button>
     <button id="btnExport" class="btn">导出</button>
+    <button id="btnVideo" class="btn icon" title="动态背景开关">◐</button>
+    <button id="btnTheme" class="btn icon" title="深色 / 浅色">☾</button>
     <button id="btnSettings" class="btn ghost">设置</button>
   </div>
 </header>
 
 <div class="dropzone" id="dropzone">
   <strong>把微信导出的聊天记录 .txt 拖到这里</strong>
-  <span>也可拖入 daily.json 直接导入数据 · 或点击选择文件</span>
+  <span>也可拖入 daily.json 直接导入数据 · 或点击选择文件 · 长按格子可删除当天进度</span>
   <input type="file" id="fileInput" accept=".txt,.json,text/plain,application/json" hidden>
 </div>
 
 <main class="wrap">
-  <div class="statbar">
+  <div class="statbar liquid-glass animate-fade-rise">
     <span class="big">出勤 <em id="statWork">0</em> 天</span>
     <span class="rng" id="statRange"></span>
     <span class="sub" id="statSub"></span>
   </div>
 
-  <div id="grid" class="grid"></div>
+  <div id="grid" class="grid liquid-glass animate-fade-rise-delay"></div>
 
-  <div class="legend">
+  <div class="legend animate-fade-rise-delay-2">
     <span><i class="chip ev"></i>当日有工作产出</span>
     <span><i class="chip star"></i>聊天中明确要求记工时</span>
-    <span>点格子可编辑 · 空白格 = 无记录 / 日期未到</span>
+    <span>点格子编辑 · <b>长按删除</b> · 空白格 = 无记录 / 日期未到</span>
   </div>
   <div class="foot">
     <span>周期固定为每月 16 日 – 次月 15 日 · 数据保存在本机浏览器</span>
@@ -55,7 +65,7 @@
 
 <!-- 编辑单日 -->
 <div class="modal" id="editor">
-  <div class="sheet">
+  <div class="sheet liquid-glass">
     <h3 id="edTitle">编辑</h3>
     <label class="row"><span>当日事项（≤20 字）</span>
       <input type="text" id="edText" maxlength="40" placeholder="做了什么，不写人名"></label>
@@ -63,16 +73,33 @@
     <label class="row"><span>备注</span>
       <input type="text" id="edNote" placeholder="如：晚 7–10 点值守"></label>
     <div class="rawbox" id="edRaw"></div>
+    <div class="acts split">
+      <button class="btn danger" id="edDel">删除这天</button>
+      <span>
+        <button class="btn ghost" id="edCancel">取消</button>
+        <button class="btn primary" id="edSave">保存</button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- 长按删除确认 -->
+<div class="modal" id="delcfm">
+  <div class="sheet liquid-glass">
+    <div class="dtitle" id="dcTitle">删除这天？</div>
+    <div class="dbody">这一天的进度会从日历里移除
+      <span class="dval" id="dcVal"></span>
+    </div>
     <div class="acts">
-      <button class="btn ghost" id="edCancel">取消</button>
-      <button class="btn primary" id="edSave">保存</button>
+      <button class="btn ghost" id="dcNo">取消</button>
+      <button class="btn danger" id="dcYes">删除</button>
     </div>
   </div>
 </div>
 
 <!-- 解析预览 -->
 <div class="modal" id="preview">
-  <div class="sheet wide">
+  <div class="sheet wide liquid-glass">
     <h3>聊天记录解析结果</h3>
     <p class="hint" id="pvMeta"></p>
     <div class="pvlist" id="pvList"></div>
@@ -86,7 +113,7 @@
 
 <!-- 设置 -->
 <div class="modal" id="settings">
-  <div class="sheet">
+  <div class="sheet liquid-glass">
     <h3>设置</h3>
     <label class="row"><span>我的昵称（用于识别"我做了什么"，留空自动判断）</span>
       <input type="text" id="setMe" placeholder="如：纸盒"></label>
@@ -100,6 +127,8 @@
     <hr>
     <label class="row"><span>同步地址（daily.json 的 raw 链接）</span>
       <input type="text" id="setSync" placeholder="https://raw.githubusercontent.com/.../data/daily.json"></label>
+    <p class="tip">默认已指向 GitHub raw。WorkBuddy 更新并 push 后，点顶栏「同步」即可拉到最新；
+      网页这边的改动请用「导出」拿到 daily.json，交回 WorkBuddy push。</p>
     <div class="acts">
       <button class="btn ghost" id="setClear">清空本周期</button>
       <button class="btn primary" id="setSave">保存</button>
@@ -107,7 +136,7 @@
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast liquid-glass" id="toast"></div>
 
 <script src="app.js"></script>
 </body>
