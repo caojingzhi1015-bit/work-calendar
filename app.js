@@ -221,8 +221,8 @@ function draw() {
     if (rec.note) div.title = rec.note;
     if (stagger) { div.style.animation = `fade-rise .5s cubic-bezier(.22,.8,.28,1) ${Math.min(i, 20) * 16}ms both`; }
     const label = d.getDate() === 1 ? `${d.getMonth() + 1}月1日` : String(d.getDate());
-    div.innerHTML = `<div class="dhead"><span class="wd">${WEEK[wd]}</span>`
-      + `<span class="dnum${k === today ? ' today' : ''}">${label}</span></div>`
+    div.innerHTML = `<div class="dhead"><span class="dnum${k === today ? ' today' : ''}">${label}</span>`
+      + `<span class="wd">${WEEK[wd]}</span></div>`
       + (text
         ? `<div class="ev${String(rec.note || '').includes('★') ? ' star' : ''}">${escapeHtml(text)}</div>`
         : `<div class="ev empty">—</div>`)
@@ -580,6 +580,136 @@ function doExport() {
   toast('已导出 daily.json');
 }
 
+/* ---------------- 一键导出截图（Canvas 绘制，离线可用） ---------------- */
+function roundRect(ctx, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function wrapText(ctx, text, maxW) {
+  const lines = []; let line = '';
+  for (const ch of String(text)) {
+    if (ctx.measureText(line + ch).width > maxW && line) { lines.push(line); line = ch; }
+    else line += ch;
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+function captureShot() {
+  const cv = document.createElement('canvas');
+  const ctx = cv.getContext && cv.getContext('2d');
+  if (!ctx) { toast('当前环境不支持截图'); return; }
+  const light = (document.documentElement.dataset.theme || 'light') === 'light';
+  const C = light
+    ? { page: '#f5f7fb', card: 'rgba(16,32,64,.04)', cardLine: 'rgba(16,32,64,.07)',
+        cardFill: 'rgba(27,102,214,.09)', cardFillLine: 'rgba(27,102,214,.30)',
+        fg: '#1a2230', muted: '#6b7484', pri: '#1b66d6',
+        evBg: 'rgba(46,110,220,.14)', evInk: '#14509f', starBg: 'rgba(46,110,220,.26)',
+        red: '#e0413f' }
+    : { page: '#04263f', card: 'rgba(255,255,255,.05)', cardLine: 'rgba(255,255,255,.10)',
+        cardFill: 'rgba(127,178,255,.14)', cardFillLine: 'rgba(127,178,255,.32)',
+        fg: '#eef3f9', muted: '#9fb0c8', pri: '#7fb2ff',
+        evBg: 'rgba(120,175,255,.22)', evInk: '#dcebff', starBg: 'rgba(120,175,255,.40)',
+        red: '#ff6b6b' };
+  const F = '"PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif';
+
+  const s = new Date(state.start + 'T00:00:00');
+  const e = new Date(state.end + 'T00:00:00');
+  const cells = [];
+  for (let d = new Date(s.getTime()); d <= e; d = addDays(d, 1)) cells.push(new Date(d.getTime()));
+  const cols = 7, rowsN = Math.ceil(cells.length / cols);
+  const pad = 34, gap = 12, cellW = 168, cellH = 132;
+  const W = pad * 2 + cols * cellW + (cols - 1) * gap;
+  const bannerH = 84;
+  let work = 0, filled = 0;
+  Object.keys(state.days).sort().forEach((k) => {
+    const r = state.days[k];
+    if (String(r.text || '').trim()) { filled++; if (r.work) work++; }
+  });
+  const H = pad + bannerH + 18 + rowsN * (cellH + gap) + pad;
+  const dpr = Math.min(2, window.devicePixelRatio || 1) * 2;
+  cv.width = W * dpr; cv.height = H * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.fillStyle = C.page; ctx.fillRect(0, 0, W, H);
+
+  // 顶部出勤横幅
+  let y = pad;
+  roundRect(ctx, pad, y, W - pad * 2, bannerH, 22);
+  ctx.fillStyle = light ? 'rgba(255,255,255,.92)' : 'rgba(255,255,255,.06)';
+  ctx.fill(); ctx.lineWidth = 1; ctx.strokeStyle = C.cardLine; ctx.stroke();
+  ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+  ctx.fillStyle = C.muted; ctx.font = '600 30px ' + F;
+  ctx.fillText('出勤', pad + 30, y + bannerH / 2);
+  const aw = ctx.measureText('出勤 ').width;
+  ctx.fillStyle = C.pri; ctx.font = '700 48px ' + F;
+  ctx.fillText(String(work), pad + 30 + aw, y + bannerH / 2 + 2);
+  const nw = ctx.measureText(String(work)).width;
+  ctx.fillStyle = C.muted; ctx.font = '600 22px ' + F;
+  ctx.fillText(' 天', pad + 30 + aw + nw, y + bannerH / 2 + 2);
+  ctx.textAlign = 'right'; ctx.fillStyle = C.muted; ctx.font = '500 18px ' + F;
+  ctx.fillText(`${state.start.replace(/-/g, '.')} – ${state.end.replace(/-/g, '.')}`, W - pad - 30, y + bannerH / 2);
+  y += bannerH + 18;
+
+  const today = fmt(new Date());
+  cells.forEach((d, i) => {
+    const x = pad + (i % cols) * (cellW + gap);
+    const cy = y + Math.floor(i / cols) * (cellH + gap);
+    const k = fmt(d), rec = state.days[k] || {}, text = String(rec.text || '').trim();
+    const wd = d.getDay(), isToday = k === today, isStar = String(rec.note || '').includes('★');
+    roundRect(ctx, x, cy, cellW, cellH, 16);
+    ctx.fillStyle = text ? C.cardFill : C.card; ctx.fill();
+    ctx.lineWidth = isToday ? 2.4 : 1.4;
+    ctx.strokeStyle = isToday ? C.red : (text ? C.cardFillLine : C.cardLine); ctx.stroke();
+
+    // 日期 + 星期
+    const label = d.getDate() === 1 ? `${d.getMonth() + 1}月1日` : String(d.getDate());
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    let numX = x + 15;
+    if (isToday) {
+      ctx.font = '700 20px ' + F; const tw = ctx.measureText(label).width;
+      roundRect(ctx, x + 12, cy + 12, tw + 18, 26, 13);
+      ctx.fillStyle = C.red; ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.fillText(label, x + 21, cy + 30);
+      numX = x + 12 + tw + 22;
+    } else {
+      ctx.font = '600 22px ' + F; ctx.fillStyle = C.fg; ctx.fillText(label, x + 15, cy + 32);
+      numX = x + 15 + ctx.measureText(label).width + 8;
+    }
+    ctx.font = '500 12px ' + F; ctx.fillStyle = C.muted; ctx.fillText(WEEK[wd], numX, cy + 30);
+
+    // 当日事项
+    ctx.textBaseline = 'middle';
+    if (text) {
+      ctx.font = '500 13px ' + F;
+      wrapText(ctx, text, cellW - 30).slice(0, 3).forEach((ln, idx) => {
+        const lw = ctx.measureText(ln).width;
+        const ey = cy + 56 + idx * 26;
+        roundRect(ctx, x + 14, ey - 12, Math.min(lw + 18, cellW - 28), 22, 11);
+        ctx.fillStyle = isStar ? C.starBg : C.evBg; ctx.fill();
+        ctx.fillStyle = C.evInk; ctx.fillText(ln, x + 23, ey);
+      });
+    } else {
+      ctx.font = '500 13px ' + F; ctx.fillStyle = C.muted; ctx.globalAlpha = .5;
+      ctx.fillText('—', x + 15, cy + 62); ctx.globalAlpha = 1;
+    }
+  });
+
+  cv.toBlob((blob) => {
+    if (!blob) { toast('截图生成失败'); return; }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `工作日历_${state.start}_${state.end}.png`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast('已导出日历截图');
+  }, 'image/png');
+}
+
 /* ---------------- 交互绑定 ---------------- */
 function bind() {
   $('monthPick').value = currentMonthVal();
@@ -604,6 +734,7 @@ function bind() {
   $('btnAI').onclick = runAI;
   $('btnSync').onclick = doSync;
   $('btnExport').onclick = doExport;
+  $('btnShot').onclick = captureShot;
 
   $('btnUndo').onclick = undo;
   window.addEventListener('keydown', (e) => {
