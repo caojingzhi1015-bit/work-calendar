@@ -64,8 +64,49 @@ const DEFAULT_SYNC = 'https://raw.githubusercontent.com/caojingzhi1015-bit/work-
 let state = { start: '', end: '', days: {}, raw: {} };
 let settings = {
   me: '', api: '', model: 'deepseek-chat', key: '', sync: DEFAULT_SYNC,
-  theme: 'dark', video: true
+  theme: 'light', video: true
 };
+
+/* ---------------- 撤销栈（上一步 / 多步回退） ---------------- */
+const UNDO_MAX = 40;
+let undoStack = [];
+
+/** 在改动前调用，返回本次快照的序号；传 label 用于提示 */
+function snapshot(label) {
+  undoStack.push({
+    label: label || '操作',
+    start: state.start,
+    days: JSON.parse(JSON.stringify(state.days)),
+    raw: JSON.parse(JSON.stringify(state.raw || {}))
+  });
+  if (undoStack.length > UNDO_MAX) undoStack.shift();
+  updateUndoBtn();
+  return undoStack.length;
+}
+
+function undo() {
+  const s = undoStack.pop();
+  if (!s) { toast('没有可撤销的操作了'); return; }
+  if (s.start && s.start !== state.start) {   // 快照属于别的周期，先切回去
+    const mv = s.start.slice(0, 7);
+    const p = periodOf(mv);
+    $('monthPick').value = mv;
+    state.start = fmt(p.s); state.end = fmt(p.e);
+  }
+  state.days = s.days;
+  state.raw = s.raw || {};
+  savePeriod(); draw(); updateUndoBtn();
+  toast('已退回：' + s.label);
+}
+
+function updateUndoBtn() {
+  const b = $('btnUndo');
+  if (!b) return;
+  const n = undoStack.length;
+  b.disabled = n === 0;
+  b.textContent = n ? `↩ 上一步 ${n}` : '↩ 上一步';
+  b.title = n ? `撤销：${undoStack[n - 1].label}（Ctrl/⌘ + Z）` : '没有可撤销的操作';
+}
 
 /* ---------------- 基础工具 ---------------- */
 const pad = (n) => String(n).padStart(2, '0');
@@ -105,7 +146,7 @@ function applyLook() {
   $('btnTheme').textContent = settings.theme === 'light' ? '☀' : '☾';
   $('btnVideo').textContent = settings.video ? '◐' : '◌';
   const meta = document.querySelector('meta[name=theme-color]');
-  if (meta) meta.setAttribute('content', settings.theme === 'light' ? '#eef1f6' : '#003561');
+  if (meta) meta.setAttribute('content', settings.theme === 'light' ? '#f7f9fc' : '#003561');
 }
 
 /* ---------------- 存储 ---------------- */
@@ -254,16 +295,13 @@ $('dcYes').onclick = () => {
 $('delcfm').addEventListener('click', (e) => { if (e.target === $('delcfm')) $('delcfm').classList.remove('show'); });
 
 function doDelete(date) {
-  const backup = state.days[date];
-  const rawBak = state.raw ? state.raw[date] : undefined;
+  const d = new Date(date + 'T00:00:00');
+  const mark = snapshot(`删除 ${d.getMonth() + 1}月${d.getDate()}日`);
   delete state.days[date];
   if (state.raw && state.raw[date]) delete state.raw[date];
   savePeriod(); draw();
-  const d = new Date(date + 'T00:00:00');
   toast(`已删除 ${d.getMonth() + 1}月${d.getDate()}日`, () => {
-    state.days[date] = backup;
-    if (rawBak !== undefined) { state.raw = state.raw || {}; state.raw[date] = rawBak; }
-    savePeriod(); draw();
+    if (undoStack.length === mark) undo();
   });
 }
 
@@ -286,6 +324,7 @@ $('edCancel').onclick = () => $('editor').classList.remove('show');
 $('edSave').onclick = () => {
   if (!editing) return;
   const t = $('edText').value.trim();
+  snapshot(`编辑 ${editing.slice(5).replace('-', '/')}`);
   if (t) state.days[editing] = { text: t, work: $('edWork').checked, note: $('edNote').value.trim() };
   else delete state.days[editing];
   savePeriod(); draw(); $('editor').classList.remove('show');
@@ -365,6 +404,7 @@ function onFile(file) {
         const j = JSON.parse(txt);
         const days = j.days || j;
         if (days && typeof days === 'object') {
+          snapshot('导入 daily.json');
           Object.keys(days).forEach((k) => {
             const v = days[k];
             state.days[k] = (typeof v === 'string') ? { text: v, work: !!v, note: '' } : v;
@@ -408,6 +448,7 @@ $('pvGuess').onclick = () => {
 };
 $('pvApply').onclick = () => {
   if (!pending) return;
+  snapshot('导入聊天记录并填入');
   document.querySelectorAll('#pvList input').forEach((inp) => {
     const d = inp.dataset.d;
     const t = inp.value.trim();
@@ -452,6 +493,7 @@ async function runAI() {
   if (!dates.length) { toast('先导入聊天记录，再进行 AI 归纳'); return; }
   if (!settings.api || !settings.key) { toast('请先在设置里填 AI 接口地址和 Key'); $('settings').classList.add('show'); return; }
   const btn = $('btnAI'); btn.disabled = true;
+  snapshot('AI 归纳');
   let done = 0, fail = 0;
   const queue = dates.slice();
   async function worker() {
@@ -470,7 +512,7 @@ async function runAI() {
     }
   }
   await Promise.all([worker(), worker(), worker()]);
-  savePeriod(); draw();
+  savePeriod(); draw(); updateUndoBtn();
   btn.disabled = false; btn.textContent = 'AI 归纳';
   toast(fail ? `完成，${fail} 天失败（检查 Key / 网络）` : `已用 AI 归纳 ${dates.length} 天`);
 }
@@ -509,6 +551,7 @@ async function doSync() {
     const days = j.days || j;
     const st = (j.meta && j.meta.start) || Object.keys(days).sort()[0];
     if (st !== state.start) { toast(`远端是 ${st} 的数据，与当前周期不一致`); return; }
+    snapshot('同步远端数据');
     Object.keys(days).forEach((k) => {
       const v = days[k];
       state.days[k] = (typeof v === 'string') ? { text: v, work: !!v, note: '' } : v;
@@ -553,6 +596,15 @@ function bind() {
   $('btnSync').onclick = doSync;
   $('btnExport').onclick = doExport;
 
+  $('btnUndo').onclick = undo;
+  window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z') && !e.shiftKey) {
+      const t = e.target;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;  // 输入框里交回浏览器
+      e.preventDefault(); undo();
+    }
+  });
+
   $('btnTheme').onclick = () => {
     settings.theme = settings.theme === 'light' ? 'dark' : 'light';
     saveSettings(); applyLook();
@@ -575,8 +627,9 @@ function bind() {
     saveSettings(); $('settings').classList.remove('show'); toast('设置已保存');
   };
   $('setClear').onclick = () => {
-    if (!confirm('清空当前周期的全部内容？')) return;
-    state.days = {}; savePeriod(); draw();
+    if (!confirm('清空当前周期的全部内容？（之后还能用「上一步」退回）')) return;
+    snapshot('清空周期');
+    state.days = {}; state.raw = {}; savePeriod(); draw();
     $('settings').classList.remove('show'); toast('已清空');
   };
   document.querySelectorAll('.modal').forEach((m) => {
@@ -589,3 +642,4 @@ loadSettings();
 applyLook();
 bind();
 render();
+updateUndoBtn();

@@ -24,22 +24,26 @@
   --video-op:.30;
 }
 [data-theme="light"]{
-  --bg:217 24% 95%;
+  --bg:220 40% 98.4%;
   --fg:222 47% 11%;
-  --muted:220 9% 44%;
-  --line:220 13% 86%;
+  --muted:220 9% 46%;
+  --line:220 13% 88%;
 
-  --glass:rgba(255,255,255,.62);
-  --glass-hi:rgba(255,255,255,.86);
-  --stroke:rgba(16,32,64,.09);
-  --shadow:0 16px 44px rgba(24,44,80,.14);
+  --glass:rgba(255,255,255,.72);
+  --glass-hi:rgba(255,255,255,.95);
+  --stroke:rgba(16,32,64,.085);
+  --shadow:0 14px 38px rgba(24,44,80,.10);
 
-  --ev-bg:rgba(46,110,220,.13);
+  --ev-bg:rgba(46,110,220,.12);
   --ev-ink:#14509f;
-  --star-bg:rgba(46,110,220,.24);
+  --star-bg:rgba(46,110,220,.22);
   --red:#e0413f;
   --pri:#1b66d6;
-  --video-op:.16;
+  --video-op:.08;
+}
+/* 浅色主题下视频只留一点点水汽，保证整页干净 */
+[data-theme="light"] #veil{
+  background:radial-gradient(120% 90% at 50% 0%,hsl(var(--bg) / .55) 0%,hsl(var(--bg) / .90) 55%,hsl(var(--bg)) 100%);
 }
 
 *{box-sizing:border-box}
