@@ -58,8 +58,11 @@ const SEED_NOTE = {
   '2026-09-12': '凌晨仍在处理数据'
 };
 
+/* 远端同步默认地址：GitHub raw（WorkBuddy 更新后 push 即生效） */
+const DEFAULT_SYNC = 'https://raw.githubusercontent.com/caojingzhi1015-bit/work-calendar/main/data/daily.json';
+
 let state = { start: '', end: '', days: {}, raw: {} };
-let settings = { me: '', api: '', model: 'deepseek-chat', key: '', sync: '' };
+let settings = { me: '', api: '', model: 'deepseek-chat', key: '', sync: DEFAULT_SYNC };
 
 /* ---------------- 基础工具 ---------------- */
 const pad = (n) => String(n).padStart(2, '0');
@@ -367,7 +370,7 @@ async function runAI() {
 
 /* ---------------- 同步 / 导出 ---------------- */
 async function tryRemote() {
-  const url = settings.sync || 'data/daily.json';
+  const url = settings.sync || DEFAULT_SYNC;
   try {
     const r = await fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now());
     if (!r.ok) return;
@@ -385,7 +388,7 @@ async function tryRemote() {
 }
 
 async function doSync() {
-  if (!settings.sync) settings.sync = 'data/daily.json';
+  if (!settings.sync) settings.sync = DEFAULT_SYNC;
   try {
     const r = await fetch(settings.sync + (settings.sync.includes('?') ? '&' : '?') + 't=' + Date.now());
     if (!r.ok) throw new Error('HTTP ' + r.status);
