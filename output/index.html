@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="manifest.webmanifest">
+<title>2026.08.16 – 2026.09.15 工作日历</title>
+<style>
+  :root{
+    --bg:#eef0f3; --card:#ffffff; --line:#ececef; --ink:#1a1a1a;
+    --muted:#8a9099;
+    --ev-bg:#d6e7ff; --ev-ink:#1b66d6; --star-bg:#b9d7ff;
+    --red:#fa5151;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{padding:18px 12px;background:var(--bg);color:var(--ink);
+    font:14px/1.45 -apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;}
+  .wrap{max-width:1020px;margin:0 auto;background:var(--card);border:1px solid var(--line);
+    border-radius:16px;padding:18px 18px 12px;box-shadow:0 1px 4px rgba(16,22,26,.05);}
+
+  /* 第一行：出勤天数 */
+  .statbar{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+    border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:14px;
+    background:linear-gradient(180deg,#f4f8ff,#eef4ff);}
+  .statbar .big{font-size:21px;font-weight:700;letter-spacing:.5px}
+  .statbar .big em{font-style:normal;color:var(--ev-ink)}
+  .statbar .rng{color:var(--muted);font-size:13px}
+  .statbar .sub{margin-left:auto;color:var(--muted);font-size:12px}
+
+  table{width:100%;border-collapse:collapse;table-layout:fixed}
+  td.cell{border:1px solid var(--line);vertical-align:top;height:98px;
+    padding:5px 7px;background:#fff;overflow:hidden}
+  td.cell.we{background:#f7f8fa}
+  td.void{border:none;background:transparent}
+  .dhead{display:flex;justify-content:space-between;align-items:baseline;gap:4px}
+  .wd{font-size:10.5px;color:var(--muted);font-weight:500}
+  .dnum{font-size:15px;font-weight:600;color:var(--ink)}
+  .dnum.today-num{display:inline-block;width:23px;height:23px;line-height:23px;
+    text-align:center;border-radius:50%;background:var(--red);color:#fff;font-size:12.5px}
+  .ev{position:relative;margin-top:6px;background:var(--ev-bg);color:var(--ev-ink);
+    border-radius:6px;padding:3px 6px 3px 15px;font-size:11.5px;line-height:1.35;word-break:break-word}
+  .ev::before{content:'';position:absolute;left:6px;top:8px;width:5px;height:5px;
+    border-radius:50%;background:var(--ev-ink)}
+  .ev.star{background:var(--star-bg)}
+
+  .legend{margin-top:12px;padding:8px 2px 2px;color:var(--muted);font-size:11.5px;
+    display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+  .chip{display:inline-block;width:14px;height:10px;border-radius:3px;vertical-align:-1px;margin-right:4px}
+  .foot{margin-top:6px;padding:4px 2px 6px;color:var(--muted);font-size:11px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+
+  @media (max-width:640px){
+    body{padding:10px 6px}
+    .wrap{padding:12px 10px 8px;border-radius:12px}
+    .statbar{padding:10px 12px}
+    .statbar .big{font-size:19px}
+    td.cell{height:84px;padding:4px 4px}
+    .dnum{font-size:13px}
+    .wd{font-size:9px}
+    .ev{font-size:9.5px;padding:2px 3px 2px 11px;line-height:1.3}
+    .ev::before{left:4px;top:7px;width:4px;height:4px}
+    .legend{font-size:10.5px;gap:10px}
+  }
+  @media print{ body{background:#fff;padding:0} .wrap{border:none;box-shadow:none} }
+</style></head>
+<body><div class="wrap">
+
+  <div class="statbar">
+    <span class="big">出勤 <em>26</em> 天</span>
+    <span class="rng">2026.08.16 – 2026.09.12</span>
+    <span class="sub">共 31 天 · 已记录 26 天 · 蓝条 = 当日工作内容</span>
+  </div>
+
+  <table><tbody><tr><td class="cell we" title="核算上月至本月考勤共10天"><div class="dhead"><span class="wd">周日</span><span class="dnum">16</span></div><div class="ev">核对考勤天数+晚间两波分发</div></td><td class="cell"><div class="dhead"><span class="wd">周一</span><span class="dnum">17</span></div><div class="ev">弹卡邮件+粉丝通配置+一键发博页</div></td><td class="cell"><div class="dhead"><span class="wd">周二</span><span class="dnum">18</span></div><div class="ev">排查发博二维码bug+维护栏目配置</div></td><td class="cell" title="科目三通过"><div class="dhead"><span class="wd">周三</span><span class="dnum">19</span></div><div class="ev">整理直播热搜榜效+粉丝通投放</div></td><td class="cell"><div class="dhead"><span class="wd">周四</span><span class="dnum">20</span></div><div class="ev">整理周边图+歌词文档+扫楼物料分发</div></td><td class="cell" title="物料未官宣，保密"><div class="dhead"><span class="wd">周五</span><span class="dnum">21</span></div><div class="ev">填活动信息表+做商业物料包</div></td><td class="cell we" title="★记工时：晚8点后随时待命，明确要求记录工作时长"><div class="dhead"><span class="wd">周六</span><span class="dnum">22</span></div><div class="ev star">晚间临时分发救急</div></td></tr><tr><td class="cell we"><div class="dhead"><span class="wd">周日</span><span class="dnum">23</span></div><div class="ev">做大屏物料包：图+视频+GIF</div></td><td class="cell" title="告知周四回京周五上班"><div class="dhead"><span class="wd">周一</span><span class="dnum">24</span></div><div class="ev">维护榜单条目+确认返京行程</div></td><td class="cell"><div class="dhead"><span class="wd">周二</span><span class="dnum">25</span></div><div class="ev">写朋友圈文案+发演唱会弹卡邮件</div></td><td class="cell"><div class="dhead"><span class="wd">周三</span><span class="dnum">26</span></div><div class="ev">发认证修改邮件+写产品玩法方案</div></td><td class="cell"><div class="dhead"><span class="wd">周四</span><span class="dnum">27</span></div><div class="ev">完善超话彩蛋产品玩法方案</div></td><td class="cell"><div class="dhead"><span class="wd">周五</span><span class="dnum">28</span></div><div class="ev">提电影长图活动设计需求</div></td><td class="cell we" title="周末加班"><div class="dhead"><span class="wd">周六</span><span class="dnum">29</span></div><div class="ev">晚间演唱会物料分发</div></td></tr><tr><td class="cell we"><div class="dhead"><span class="wd">周日</span><span class="dnum">30</span></div></td><td class="cell" title="凌晨0:24起连轴分发，做三组图包"><div class="dhead"><span class="wd">周一</span><span class="dnum">31</span></div><div class="ev">做群星盛典氛围包+物料图包</div></td><td class="cell" title="发烧仍在线工作"><div class="dhead"><span class="wd">周二</span><span class="dnum">9月1日</span></div><div class="ev">做盛典物料包+活动图+超享购排期</div></td><td class="cell"><div class="dhead"><span class="wd">周三</span><span class="dnum">2</span></div><div class="ev">发邮件+整理超享购活动细则</div></td><td class="cell"><div class="dhead"><span class="wd">周四</span><span class="dnum">3</span></div><div class="ev">配置粉条+连续多日粉丝通投放</div></td><td class="cell" title="发烧居家办公，回公司取电脑"><div class="dhead"><span class="wd">周五</span><span class="dnum">4</span></div><div class="ev">剪视频图包+替换海报+数据盘点</div></td><td class="cell we" title="★记工时：明确晚7点—10点值守分发"><div class="dhead"><span class="wd">周六</span><span class="dnum">5</span></div><div class="ev star">做年度推荐系列图+晚间值守</div></td></tr><tr><td class="cell we" title="★记工时：明确「周末记得算上工作日」"><div class="dhead"><span class="wd">周日</span><span class="dnum">6</span></div><div class="ev star">直播录屏cut+回放粉丝通投放</div></td><td class="cell"><div class="dhead"><span class="wd">周一</span><span class="dnum">7</span></div><div class="ev">发生日弹卡邮件+数据核查</div></td><td class="cell"><div class="dhead"><span class="wd">周二</span><span class="dnum">8</span></div></td><td class="cell"><div class="dhead"><span class="wd">周三</span><span class="dnum">9</span></div><div class="ev">对接演唱会弹卡+高级话题页素材</div></td><td class="cell" title="提交下周在岗时间表"><div class="dhead"><span class="wd">周四</span><span class="dnum">10</span></div><div class="ev">配高级话题页+申请协管+整理音频</div></td><td class="cell" title="★记工时：「记得工作天数」"><div class="dhead"><span class="wd">周五</span><span class="dnum">11</span></div><div class="ev star">剪视频+改话题页+筛热搜话题</div></td><td class="cell we today" title="凌晨仍在处理数据"><div class="dhead"><span class="wd">周六</span><span class="dnum today-num">12</span></div><div class="ev">筛选演唱会热榜数据</div></td></tr><tr><td class="cell we" title="日期未到"><div class="dhead"><span class="wd">周日</span><span class="dnum">13</span></div></td><td class="cell" title="日期未到"><div class="dhead"><span class="wd">周一</span><span class="dnum">14</span></div></td><td class="cell" title="日期未到"><div class="dhead"><span class="wd">周二</span><span class="dnum">15</span></div></td><td class="void"></td><td class="void"></td><td class="void"></td><td class="void"></td></tr></tbody></table>
+
+  <div class="legend">
+    <span><span class="chip" style="background:var(--ev-bg)"></span>当日有工作产出</span>
+    <span><span class="chip" style="background:var(--star-bg)"></span>聊天中明确要求记工时</span>
+    <span>空白格 = 无记录 / 日期未到（悬停看备注）</span>
+  </div>
+  <div class="foot"><span>周期：每月 16 日 – 次月 15 日 · 数据源：微信（微信 · 珂菲姐姐（2026-08-16 ~ 2026-09-12，共 984 条））</span><span>生成于 2026-09-12</span></div>
+</div>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+}
+</script>
+</body></html>

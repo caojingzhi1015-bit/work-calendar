@@ -2,6 +2,11 @@
 
 把微信聊天记录变成一张「每月 16 日 ~ 次月 15 日」的工作日历。纯静态单页应用，无后端、无构建，打开即用。
 
+- **在线地址**：https://caojingzhi1015-bit.github.io/work-calendar/
+- **仓库**：https://github.com/caojingzhi1015-bit/work-calendar
+
+手机浏览器打开后「添加到主屏幕」即可当 App 用；Windows 桌面可用仓库里的快捷方式入口。
+
 ## 能做什么
 
 | 功能 | 说明 |
@@ -28,8 +33,17 @@
 **方式二 · 让 WorkBuddy 整理后同步**
 
 1. 在 WorkBuddy 里跑 `wechat-monthly-calendar` 技能，产出 `data/daily.json`
-2. push 到本仓库
+2. push 到本仓库 → GitHub Actions 自动部署（约 30 秒上线）
 3. 网页点「同步」，拉 `data/daily.json` 覆盖当前周期
+
+默认同步地址已内置为
+`https://raw.githubusercontent.com/caojingzhi1015-bit/work-calendar/main/data/daily.json`
+（设置里可改成自己的 raw 链接）。
+
+## 部署
+
+仓库已配置 `.github/workflows/pages.yml`：push 到 `main` 即自动打包部署到 GitHub Pages，
+不经过 Jekyll（根目录有 `.nojekyll`）。手动触发：仓库 → Actions → Deploy to GitHub Pages → Run workflow。
 
 ## 微信聊天记录怎么导出
 
