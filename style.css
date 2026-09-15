@@ -177,8 +177,8 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.6
 .cell.void{background:transparent;box-shadow:none;cursor:default;min-height:0;padding:0}
 .cell.void:hover{transform:none}
 .cell.pressing{transform:scale(.93);background:hsl(var(--red) / .18)}
-.cell.filled{background:linear-gradient(160deg,hsl(var(--pri) / .16),hsl(var(--fg) / .03));
-  box-shadow:inset 0 0 0 1px hsl(var(--pri) / .28)}
+/* 有内容的格子：底保持素净（蓝色只留给 .ev 工作内容条，用户指定） */
+.cell.filled{background:none;box-shadow:none}
 .cell.todaybox{box-shadow:inset 0 0 0 1.6px hsl(var(--red) / .85)}
 
 .dhead{display:flex;justify-content:flex-start;align-items:baseline;gap:6px;padding-right:22px}
