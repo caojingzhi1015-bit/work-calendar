@@ -244,21 +244,21 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.6
 #delcfm .dval{display:block;margin:10px 0 0;padding:9px 12px;border-radius:var(--r-sm);
   background:hsl(var(--fg) / .06);color:hsl(var(--fg));font-size:13px;word-break:break-word}
 #delcfm .acts{justify-content:center;gap:12px}
-/* 删除确认：取消 + 删除（确认）两个按钮统一为黑字灰边框，浅色弹窗上清晰可见 */
-#delcfm #dcNo,
-#delcfm #dcYes{
-  color:hsl(var(--fg));
-  background:hsl(220 14% 88%);
-  box-shadow:inset 0 0 0 1.5px hsl(var(--muted));
+/* 删除确认：取消 + 删除（确认）两个按钮统一为黑字灰边框，浅色弹窗上清晰可见
+   （按钮在 HTML 里同用 .btn.pop，无 ghost/danger 之分，!important 兜底防优先级冲突） */
+#delcfm .acts .btn.pop{
+  color:hsl(var(--fg)) !important;
+  background:hsl(220 14% 88%) !important;
+  box-shadow:inset 0 0 0 1.5px hsl(var(--muted)) !important;
   font-weight:600;min-width:78px}
-#delcfm #dcNo:hover,
-#delcfm #dcYes:hover{background:hsl(220 14% 82%)}
-[data-theme="dark"] #delcfm #dcNo,
-[data-theme="dark"] #delcfm #dcYes{
-  background:hsl(var(--fg) / .12);
-  box-shadow:inset 0 0 0 1.5px hsl(var(--fg) / .25)}
-[data-theme="dark"] #delcfm #dcNo:hover,
-[data-theme="dark"] #delcfm #dcYes:hover{background:hsl(var(--fg) / .18)}
+#delcfm .acts .btn.pop:hover{
+  background:hsl(220 14% 82%) !important}
+[data-theme="dark"] #delcfm .acts .btn.pop{
+  background:hsl(var(--fg) / .12) !important;
+  box-shadow:inset 0 0 0 1.5px hsl(var(--fg) / .25) !important;
+  color:hsl(var(--fg)) !important}
+[data-theme="dark"] #delcfm .acts .btn.pop:hover{
+  background:hsl(var(--fg) / .18) !important}
 
 /* ============ Toast（可带撤销） ============ */
 .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(14px);
