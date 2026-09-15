@@ -243,7 +243,12 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.6
 #delcfm .dbody{color:hsl(var(--muted));font-size:12.5px;margin-bottom:18px;line-height:1.6}
 #delcfm .dval{display:block;margin:10px 0 0;padding:9px 12px;border-radius:var(--r-sm);
   background:hsl(var(--fg) / .06);color:hsl(var(--fg));font-size:13px;word-break:break-word}
-#delcfm .acts{justify-content:center}
+#delcfm .acts{justify-content:center;gap:12px}
+#delcfm #dcNo{
+  color:hsl(var(--fg));
+  background:hsl(var(--fg) / .05);
+  box-shadow:inset 0 0 0 1px hsl(var(--muted) / .55)}
+#delcfm #dcNo:hover{background:hsl(var(--fg) / .12)}
 
 /* ============ Toast（可带撤销） ============ */
 .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(14px);
