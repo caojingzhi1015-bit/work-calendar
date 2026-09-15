@@ -1,5 +1,5 @@
 /* 离线缓存：让「添加到主屏幕」后无网也能打开 */
-const CACHE = 'wb-calendar-v9';
+const CACHE = 'wb-calendar-v10';
 const ASSETS = [
   './',
   './index.html',

@@ -122,14 +122,20 @@ input[type=month]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.6
 .btn.primary:hover{background:hsl(var(--pri) / .88)}
 .btn.ghost{background:transparent;color:hsl(var(--muted))}
 .btn.icon{padding:7px 11px;font-size:14px;line-height:1}
-/* 分段控件：日间 / 夜间 二选一 */
+/* 分段控件：日间 / 夜间 二选一（浅色主题下也要黑字+灰框，清晰可见） */
 .seg{display:inline-flex;gap:2px;padding:3px;border-radius:999px;
-  background:var(--glass-hi);box-shadow:inset 0 0 0 1px var(--stroke)}
-.segbtn{border:none;background:transparent;color:hsl(var(--muted));
+  background:hsl(220 14% 91%);
+  box-shadow:inset 0 0 0 1.5px hsl(var(--muted))}
+.segbtn{border:none;background:transparent;color:hsl(var(--fg));
   font:inherit;font-size:12px;line-height:1;padding:5px 12px;border-radius:999px;
-  cursor:pointer;transition:background .18s ease,color .18s ease;white-space:nowrap}
-.segbtn:hover{color:hsl(var(--fg))}
+  cursor:pointer;transition:background .18s ease,color .18s ease;white-space:nowrap;
+  font-weight:600}
+.segbtn:hover{background:hsl(220 14% 84%)}
 .segbtn.on{background:hsl(var(--pri));color:#fff;font-weight:500}
+[data-theme="dark"] .seg{background:hsl(var(--fg) / .10);
+  box-shadow:inset 0 0 0 1.5px hsl(var(--fg) / .30)}
+[data-theme="dark"] .segbtn{color:hsl(var(--fg))}
+[data-theme="dark"] .segbtn:hover{background:hsl(var(--fg) / .14)}
 [data-theme="dark"] .segbtn.on{color:#08111f}
 .btn.on{background:hsl(var(--pri) / .20);color:hsl(var(--fg));
   box-shadow:inset 0 0 0 1px hsl(var(--pri) / .45)}
