@@ -229,13 +229,13 @@ function draw() {
     row.appendChild(div);
   });
 
-  // 统计
-  let work = 0, filled = 0, last = state.start;
+  // 统计：出勤 = 有内容的天数（手动新增也要计入，不依赖「记工时」是否勾选）
+  let filled = 0, last = state.start;
   Object.keys(state.days).sort().forEach((k) => {
     const r = state.days[k];
-    if (String(r.text || '').trim()) { filled++; if (r.work) { work++; last = k; } }
+    if (String(r.text || '').trim()) { filled++; last = k; }
   });
-  $('statWork').textContent = work;
+  $('statWork').textContent = filled;
   $('statRange').textContent = `${state.start.replace(/-/g, '.')} – ${last.replace(/-/g, '.')}`;
   $('statSub').textContent = `共 ${cells.length} 天 · 已记录 ${filled} 天`;
 }
@@ -624,11 +624,13 @@ function captureShot() {
   const pad = 34, gap = 12, cellW = 168, cellH = 132;
   const W = pad * 2 + cols * cellW + (cols - 1) * gap;
   const bannerH = 84;
-  let work = 0, filled = 0;
+  // 与 draw() 口径一致：出勤 = 有内容的天数
+  let filled = 0;
   Object.keys(state.days).sort().forEach((k) => {
     const r = state.days[k];
-    if (String(r.text || '').trim()) { filled++; if (r.work) work++; }
+    if (String(r.text || '').trim()) filled++;
   });
+  const work = filled;
   const H = pad + bannerH + 18 + rowsN * (cellH + gap) + pad;
   const dpr = Math.min(2, window.devicePixelRatio || 1) * 2;
   cv.width = W * dpr; cv.height = H * dpr;
